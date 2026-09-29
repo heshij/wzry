@@ -3,15 +3,18 @@ const router = useRouter()
 </script>
 
 <template>
-  <main p="x4 y10" text="center teal-700 dark:gray-200">
-    <div text-4xl>
-      <div i-carbon-warning inline-block />
+  <div class="flex flex-col items-center gap-4 py-16 text-center">
+    <UIcon name="i-lucide-circle-alert" class="text-dimmed size-12" />
+    <p class="text-lg font-semibold">
+      页面不存在
+    </p>
+    <div class="flex gap-2">
+      <UButton color="neutral" variant="outline" @click="router.back()">
+        返回上一页
+      </UButton>
+      <UButton to="/">
+        回到首页
+      </UButton>
     </div>
-    <div>Not found</div>
-    <div>
-      <button text-sm btn m="3 t8" @click="router.back()">
-        Back
-      </button>
-    </div>
-  </main>
+  </div>
 </template>

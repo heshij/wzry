@@ -1,21 +1,19 @@
 <script setup lang="ts">
 const color = useColorMode()
 
-useHead({
-  meta: [{
-    id: 'theme-color',
-    name: 'theme-color',
-    content: () => color.value === 'dark' ? '#222222' : '#ffffff',
-  }],
-})
+const isDark = computed(() => color.value === 'dark')
 
 function toggleDark() {
-  color.preference = color.value === 'dark' ? 'light' : 'dark'
+  color.preference = isDark.value ? 'light' : 'dark'
 }
 </script>
 
 <template>
-  <button class="!outline-none" @click="toggleDark">
-    <div class="i-carbon-sun dark:i-carbon-moon" />
-  </button>
+  <UButton
+    :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
+    :aria-label="isDark ? '切换到浅色模式' : '切换到深色模式'"
+    color="neutral"
+    variant="ghost"
+    @click="toggleDark"
+  />
 </template>

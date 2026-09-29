@@ -5,18 +5,26 @@
   "scripts": {
     "build": "nuxt build",
     "dev:pwa": "VITE_PLUGIN_PWA=true nuxt dev",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev --host 0.0.0.0 --port 3002",
     "generate": "nuxt generate",
+    "icons": "node scripts/generate-icons.mjs",
     "prepare": "nuxt prepare",
     "preview": "nuxt preview",
     "start": "node .output/server/index.mjs",
     "start:generate": "npx serve .output/public",
     "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "typecheck": "nuxt typecheck"
+  },
+  "dependencies": {
+    "@nuxt/ui": "catalog:",
+    "tailwindcss": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:dev",
     "@iconify-json/carbon": "catalog:icons",
+    "@iconify-json/lucide": "catalog:icons",
     "@iconify-json/twemoji": "catalog:icons",
     "@nuxt/devtools": "catalog:build",
     "@nuxt/eslint": "catalog:build",
@@ -36,11 +44,8 @@
     "pinia": "catalog:frontend",
     "typescript": "catalog:dev",
     "unocss": "catalog:build",
+    "vitest": "catalog:dev",
     "vue": "catalog:frontend",
     "vue-tsc": "catalog:dev"
-  },
-  "dependencies": {
-    "@nuxt/ui": "^4.11.2",
-    "tailwindcss": "^4.3.3"
   }
 }

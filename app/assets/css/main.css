@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+/*
+ * 品牌主题与可读性调整。这些规则不放进 @layer，以便覆盖 Nuxt UI 在 @layer theme 里的同名变量。
+ * 1) 浅色模式下 --ui-primary 默认取 500 号色，白字实心按钮对比度只有约 2:1；浅色下改用 700 号色
+ *    （白字 ≈ 6.8:1，定位徽标文字同样达标）。深色模式保持默认的亮色配深字，不要覆盖。
+ * 2) 弱化文字（时间戳、人数计数等）默认过淡，浅色与深色下都不足 4.5:1，整体提一档。
+ */
+:root:not(.dark) {
+  --ui-primary: var(--ui-color-primary-700);
+  --ui-text-muted: var(--ui-color-neutral-600);
+  --ui-text-dimmed: var(--ui-color-neutral-500);
+}
+
+.dark {
+  --ui-text-muted: var(--ui-color-neutral-300);
+  --ui-text-dimmed: var(--ui-color-neutral-400);
+}

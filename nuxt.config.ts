@@ -1,5 +1,5 @@
 import { pwa } from './app/config/pwa'
-import { appDescription } from './app/constants/index'
+import { appDescription, appName } from './app/constants/index'
 
 export default defineNuxtConfig({
   modules: [
@@ -12,8 +12,12 @@ export default defineNuxtConfig({
     '@nuxt/ui',
   ],
 
+  // 纯本地单机应用：数据只存 localStorage，页面按 SPA 渲染。
+  // 这样 PWA 的 navigateFallback 能正确接管所有深链接，也不存在 SSR 与服务端拿不到的本地数据之间的 hydration 冲突。
+  ssr: false,
+
   devtools: {
-    enabled: true,
+    enabled: false,
   },
 
   app: {
@@ -21,18 +25,19 @@ export default defineNuxtConfig({
       viewport: 'width=device-width,initial-scale=1',
       link: [
         { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
-        { rel: 'icon', type: 'image/svg+xml', href: '/nuxt.svg' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/icon.svg' },
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
       ],
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: appDescription },
+        { name: 'apple-mobile-web-app-title', content: appName },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
-        { name: 'theme-color', media: '(prefers-color-scheme: light)', content: 'white' },
-        { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#222222' },
       ],
     },
   },
+
+  css: ['~/assets/css/main.css'],
 
   colorMode: {
     classSuffix: '',
@@ -61,7 +66,6 @@ export default defineNuxtConfig({
     prerender: {
       crawlLinks: false,
       routes: ['/'],
-      ignore: ['/hi'],
     },
   },
 
@@ -71,6 +75,13 @@ export default defineNuxtConfig({
       nuxt: {
         sortConfigKeys: true,
       },
+    },
+  },
+
+  icon: {
+    clientBundle: {
+      scan: true,
+      sizeLimitKb: 256,
     },
   },
 
