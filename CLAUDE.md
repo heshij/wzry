@@ -37,7 +37,7 @@ pnpm generate && pnpm start:generate  # 静态产物 + 本地预览
 pnpm icons                            # 改了 public/icon.svg 后重新生成 PWA/favicon 图标
 ```
 
-CI（`.github/workflows/ci.yml`）在 `main` 分支的 push 与 PR 上跑 lint / typecheck / test 三个 job。注意仓库当前无 remote、本地分支是 `master`，推远端前先对齐分支名。
+CI（`.github/workflows/ci.yml`）在 `main` 分支的 push 与 PR 上跑 lint / typecheck / test 三个 job；仓库已推送 GitHub（`origin` → `heshij/wzry`，本地与远端均为 `main` 分支，tag `v0.1.0`）。
 
 ## 编码规范
 
