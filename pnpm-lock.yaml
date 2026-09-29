@@ -131,6 +131,13 @@ catalogs:
     unocss:
       specifier: ^66.10.0
       version: 66.10.0
+  default:
+    '@nuxt/ui':
+      specifier: ^4.11.2
+      version: 4.11.2
+    tailwindcss:
+      specifier: ^4.3.3
+      version: 4.3.3
   dev:
     '@antfu/eslint-config':
       specifier: ^9.5.1
@@ -197,10 +204,10 @@ importers:
   .:
     dependencies:
       '@nuxt/ui':
-        specifier: ^4.11.2
+        specifier: 'catalog:'
         version: 4.11.2(@oxc-project/types@0.146.0)(@tiptap/extensions@3.31.3(@tiptap/core@3.31.3(@tiptap/pm@3.31.3))(@tiptap/pm@3.31.3))(change-case@5.4.4)(db0@0.3.4)(embla-carousel@8.6.0)(esbuild@0.28.2)(ioredis@5.11.1(supports-color@10.2.2))(lightningcss@1.33.0)(magicast@0.5.4)(rolldown@1.2.5)(rollup@4.62.5)(tailwindcss@4.3.3)(typescript@6.0.3)(vite@8.2.2)(vue-router@5.2.0(@vue/compiler-sfc@3.5.42)(esbuild@0.28.2)(pinia@4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.42(typescript@6.0.3)))(rolldown@1.2.5)(rollup@4.62.5)(vite@8.2.2)(vue@3.5.42(typescript@6.0.3)))(vue@3.5.42(typescript@6.0.3))(zod@4.5.4)
       tailwindcss:
-        specifier: ^4.3.3
+        specifier: 'catalog:'
         version: 4.3.3
     devDependencies:
       '@antfu/eslint-config':

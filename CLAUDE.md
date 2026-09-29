@@ -81,3 +81,4 @@ CI（`.github/workflows/ci.yml`）在 `main` 分支的 push 与 PR 上跑 lint /
 - `pnpm lint` 报 `style/quotes: Strings must use singlequote` → `@antfu/eslint-config` 默认要求单引号（本文档早期版本误写为双引号，已更正）→ 全仓统一单引号，以 `pnpm lint` 实际规则为准。
 - `pnpm dev` 的进程跑一会儿后崩溃，日志出现 `FATAL ERROR: Reached heap limit Allocation failed` → 在 dev server 运行期间执行 `pnpm typecheck`（内含 `nuxt prepare`，会重写 `.nuxt`）或同时跑多个 dev 实例，会让进程堆内存冲高后崩掉 → 静态检查与浏览器验收分开进行；验收时只保留一个 dev 实例，且不要在其运行期间跑 typecheck。
 - 验收截图里底部固定操作栏「跑到」列表中部，疑似布局缺陷 → 全页截图（`screenshot --full`）对 `position: fixed` 元素的合成假象，实时页面并无问题 → 验收截图用视口截图（不加 `--full`）；存疑时用 `getBoundingClientRect()` 实测位置复核。
+- CI 三个 job 全挂在 Install 步骤（1 秒内 exit 1），报 `ERR_PNPM_OUTDATED_LOCKFILE` → package.json 依赖改成 `catalog:` 引用后没有重新生成 pnpm-lock.yaml，CI 默认 `--frozen-lockfile` 会直接拒绝（本地普通 `pnpm install` 会自动同步，感知不到）→ 改动依赖后跑一次 `pnpm install` 并提交锁文件；本地用 `pnpm install --frozen-lockfile` 可以预检。
