@@ -1,8 +1,17 @@
 <script setup lang="ts">
+import type { LaneFilter } from '~/utils/heroes'
 import { heroes } from '~/constants/heroes'
 import { usePoolsStore } from '~/stores/pools'
+import { ALL_LANES, filterHeroesByLane } from '~/utils/heroes'
 
 const poolsStore = usePoolsStore()
+
+// 两处列表（页面底部浏览网格、编辑成员弹层）各自独立的筛选状态
+const browseLane = ref<LaneFilter>(ALL_LANES)
+const memberLane = ref<LaneFilter>(ALL_LANES)
+
+const browseHeroes = computed(() => filterHeroesByLane(heroes, browseLane.value))
+const memberHeroes = computed(() => filterHeroesByLane(heroes, memberLane.value))
 
 const nameModalOpen = ref(false)
 const editingId = ref<string | null>(null)
@@ -50,6 +59,7 @@ function openMembers(id: string) {
     return
   memberPoolId.value = id
   selectedHeroIds.value = [...pool.heroIds]
+  memberLane.value = ALL_LANES
   memberModalOpen.value = true
 }
 
@@ -80,11 +90,11 @@ function confirmDelete() {
 <template>
   <div class="space-y-8">
     <section class="space-y-3">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between gap-3">
         <h1 class="text-xl font-semibold">
           英雄池
         </h1>
-        <UButton icon="i-lucide-plus" @click="openCreate">
+        <UButton icon="i-lucide-plus" class="h-11" @click="openCreate">
           新建
         </UButton>
       </div>
@@ -96,19 +106,19 @@ function confirmDelete() {
       <article
         v-for="pool in poolsStore.pools"
         :key="pool.id"
-        class="border-default bg-elevated p-4 border rounded-xl space-y-3"
+        class="border-default bg-elevated rounded-card shadow-card p-4 border space-y-3"
       >
         <div class="flex items-baseline justify-between gap-2">
           <h2 class="font-semibold truncate">
             {{ pool.name }}
           </h2>
-          <span class="text-dimmed text-xs shrink-0">{{ pool.heroIds.length }} 个英雄</span>
+          <span class="text-gold-700 dark:text-gold-300 shrink-0 text-sm font-medium">{{ pool.heroIds.length }} 个英雄</span>
         </div>
         <div class="flex flex-wrap gap-2">
-          <UButton icon="i-lucide-list-checks" size="sm" color="neutral" variant="soft" @click="openMembers(pool.id)">
+          <UButton icon="i-lucide-list-checks" size="sm" color="neutral" variant="soft" class="h-11" @click="openMembers(pool.id)">
             编辑成员
           </UButton>
-          <UButton icon="i-lucide-pencil" size="sm" color="neutral" variant="ghost" @click="openRename(pool.id)">
+          <UButton icon="i-lucide-pencil" size="sm" color="neutral" variant="ghost" class="h-11" @click="openRename(pool.id)">
             重命名
           </UButton>
           <UButton
@@ -116,6 +126,7 @@ function confirmDelete() {
             size="sm"
             color="error"
             variant="ghost"
+            class="h-11"
             :aria-label="`删除英雄池 ${pool.name}`"
             @click="openDelete(pool.id)"
           >
@@ -127,19 +138,21 @@ function confirmDelete() {
 
     <section class="space-y-3">
       <div class="flex items-baseline justify-between">
-        <h2 class="text-muted text-sm font-medium">
-          全部英雄
-        </h2>
-        <span class="text-dimmed text-xs">{{ heroes.length }} 位</span>
+        <SectionTitle title="全部英雄" />
+        <span class="text-dimmed text-xs">{{ browseHeroes.length }} 位</span>
       </div>
-      <ul class="gap-x-4 gap-y-1 grid grid-cols-2 sm:grid-cols-3">
+      <LaneFilterTabs v-model="browseLane" label="浏览列表分路筛选" />
+      <ul class="gap-3 grid grid-cols-2 sm:grid-cols-3">
         <li
-          v-for="hero in heroes"
+          v-for="hero in browseHeroes"
           :key="hero.id"
-          class="flex items-center justify-between gap-2 text-sm"
+          class="flex items-center gap-2 min-w-0"
         >
-          <span class="truncate">{{ hero.name }}</span>
-          <span class="text-dimmed text-xs shrink-0">{{ hero.lanes.join('/') }}</span>
+          <HeroAvatar :name="hero.name" :official-id="hero.officialId" size="sm" />
+          <span class="min-w-0">
+            <span class="block truncate text-sm font-medium">{{ hero.name }}</span>
+            <span class="text-dimmed block truncate text-xs">{{ hero.lanes.join('/') }}</span>
+          </span>
         </li>
       </ul>
     </section>
@@ -150,17 +163,17 @@ function confirmDelete() {
           v-model="nameInput"
           placeholder="例如：我会玩的英雄"
           size="lg"
-          class="w-full"
+          class="h-11 w-full"
           :maxlength="20"
           @keydown.enter="submitName"
         />
       </template>
       <template #footer>
-        <div class="flex justify-end gap-2 w-full">
-          <UButton color="neutral" variant="ghost" @click="nameModalOpen = false">
+        <div class="flex w-full justify-end gap-2">
+          <UButton color="neutral" variant="ghost" class="h-11" @click="nameModalOpen = false">
             取消
           </UButton>
-          <UButton :disabled="!nameInput.trim()" @click="submitName">
+          <UButton class="h-11" :disabled="!nameInput.trim()" @click="submitName">
             确定
           </UButton>
         </div>
@@ -170,29 +183,34 @@ function confirmDelete() {
     <UModal v-model:open="memberModalOpen" :title="`编辑「${memberPool?.name ?? ''}」`">
       <template #body>
         <p class="text-muted text-sm">
-          已选 {{ selectedHeroIds.length }} / {{ heroes.length }}
+          已选 <span class="text-gold-700 dark:text-gold-300 font-semibold">{{ selectedHeroIds.length }}</span> / {{ heroes.length }}
         </p>
-        <div class="mt-3 space-y-0.5 max-h-[55vh] overflow-y-auto">
+        <div class="mt-3">
+          <LaneFilterTabs v-model="memberLane" label="选择池成员分路筛选" />
+        </div>
+        <div class="mt-3 max-h-[55vh] space-y-0.5 overflow-y-auto">
           <label
-            v-for="hero in heroes"
+            v-for="hero in memberHeroes"
             :key="hero.id"
-            class="flex items-center gap-3 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-elevated"
+            class="hover:bg-elevated min-h-11 rounded-control flex cursor-pointer items-center gap-3 px-2 py-1.5"
           >
             <UCheckbox
               :model-value="selectedHeroIds.includes(hero.id)"
+              :ui="{ base: 'rounded-[4px]' }"
               @update:model-value="toggleHero(hero.id)"
             />
+            <HeroAvatar :name="hero.name" :official-id="hero.officialId" size="sm" />
             <span class="flex-1 truncate">{{ hero.name }}</span>
-            <span class="text-dimmed text-xs shrink-0">{{ hero.lanes.join('/') }}</span>
+            <span class="text-dimmed shrink-0 text-xs">{{ hero.lanes.join('/') }}</span>
           </label>
         </div>
       </template>
       <template #footer>
-        <div class="flex justify-end gap-2 w-full">
-          <UButton color="neutral" variant="ghost" @click="memberModalOpen = false">
+        <div class="flex w-full justify-end gap-2">
+          <UButton color="neutral" variant="ghost" class="h-11" @click="memberModalOpen = false">
             取消
           </UButton>
-          <UButton @click="submitMembers">
+          <UButton class="h-11" @click="submitMembers">
             保存
           </UButton>
         </div>
@@ -204,11 +222,11 @@ function confirmDelete() {
         <p>确定删除「{{ deleteTarget?.name ?? '' }}」吗？删除后无法恢复。</p>
       </template>
       <template #footer>
-        <div class="flex justify-end gap-2 w-full">
-          <UButton color="neutral" variant="ghost" @click="deleteModalOpen = false">
+        <div class="flex w-full justify-end gap-2">
+          <UButton color="neutral" variant="ghost" class="h-11" @click="deleteModalOpen = false">
             取消
           </UButton>
-          <UButton color="error" @click="confirmDelete">
+          <UButton color="error" class="h-11" @click="confirmDelete">
             删除
           </UButton>
         </div>
