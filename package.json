@@ -4,9 +4,11 @@
   "packageManager": "pnpm@12.3.4",
   "scripts": {
     "build": "nuxt build",
+    "deploy": "node scripts/deploy.mjs",
     "dev:pwa": "VITE_PLUGIN_PWA=true nuxt dev",
     "dev": "nuxt dev --host 0.0.0.0 --port 3002",
     "generate": "nuxt generate",
+    "heroes": "node scripts/fetch-hero-images.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "prepare": "nuxt prepare",
     "preview": "nuxt preview",
@@ -19,7 +21,8 @@
   },
   "dependencies": {
     "@nuxt/ui": "catalog:",
-    "tailwindcss": "catalog:"
+    "tailwindcss": "catalog:",
+    "three": "catalog:frontend"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:dev",
@@ -31,6 +34,7 @@
     "@nuxtjs/color-mode": "catalog:build",
     "@pinia/nuxt": "catalog:build",
     "@types/node": "catalog:dev",
+    "@types/three": "catalog:dev",
     "@unocss/eslint-config": "catalog:build",
     "@unocss/nuxt": "catalog:build",
     "@vite-pwa/nuxt": "catalog:build",
