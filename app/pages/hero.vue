@@ -22,7 +22,7 @@ const historyStore = useHistoryStore()
 const { rolling, reveal } = useReveal()
 
 const results = ref<DrawnHero[] | null>(null)
-const rollNames = ref<string[]>([])
+const rollHeroes = ref<Hero[]>([])
 
 const playerCount = computed(() => playersStore.players.length)
 
@@ -51,7 +51,7 @@ const canRedrawOne = computed(() => poolHeroes.value.length > playerCount.value)
 
 function rollTick() {
   const pool = poolHeroes.value
-  rollNames.value = playersStore.players.map(() => pool[Math.floor(Math.random() * pool.length)]?.name ?? '')
+  rollHeroes.value = playersStore.players.map(() => pool[Math.floor(Math.random() * pool.length)]!)
 }
 
 function recordDraw(drawn: DrawnHero[]) {
@@ -112,18 +112,32 @@ async function redrawAll() {
     <h1 class="text-xl font-semibold">
       抽签中…
     </h1>
-    <div class="gap-3 grid grid-cols-1 sm:grid-cols-2">
+    <div class="gap-3 grid grid-cols-2 lg:grid-cols-3">
       <article
-        v-for="(name, index) in rollNames"
+        v-for="(hero, index) in rollHeroes"
         :key="index"
-        class="border-default bg-elevated p-4 border rounded-xl"
+        class="border-default bg-elevated rounded-card gap-2 p-3 border flex flex-col items-center text-center sm:p-4"
       >
-        <p class="text-muted text-sm">
+        <HeroAvatar :name="hero.name" :official-id="hero.officialId" />
+        <p class="text-muted w-full truncate text-xs">
           {{ playersStore.resolvedPlayers[index]?.name ?? '' }}
         </p>
-        <p class="text-3xl tracking-wide font-bold mt-1 opacity-50">
-          {{ name }}
+        <p class="text-gold-700 dark:text-gold-300 w-full truncate text-xl font-bold tracking-tight animate-pulse sm:text-3xl">
+          {{ hero.name }}
         </p>
+        <!-- 与结果卡同构：真实分路徽标 + 等高的按钮占位，揭晓后不跳版 -->
+        <div class="flex flex-wrap justify-center gap-1">
+          <UBadge
+            v-for="lane in hero.lanes"
+            :key="lane"
+            color="primary"
+            variant="subtle"
+            size="md"
+          >
+            {{ lane }}
+          </UBadge>
+        </div>
+        <div class="mt-auto h-11 w-full" aria-hidden="true" />
       </article>
     </div>
   </section>
@@ -135,23 +149,19 @@ async function redrawAll() {
 
     <div class="space-y-3">
       <div class="flex items-center justify-between">
-        <h2 class="text-muted text-sm font-medium">
-          玩家名单
-        </h2>
+        <SectionTitle title="玩家名单" />
         <span class="text-dimmed text-xs">{{ playerCount }}/{{ PLAYER_COUNT_MAX }} 人</span>
       </div>
       <PlayerListEditor />
     </div>
 
-    <div class="space-y-2">
-      <h2 class="text-muted text-sm font-medium">
-        英雄池
-      </h2>
+    <div class="space-y-3">
+      <SectionTitle title="英雄池" />
       <USelect
         v-model="poolsStore.selectedPoolId"
         :items="poolItems"
         size="lg"
-        class="w-full"
+        class="h-11 w-full"
         aria-label="选择英雄池"
       />
       <p v-if="blockedReason" class="text-warning text-xs">
@@ -177,37 +187,38 @@ async function redrawAll() {
       抽签结果
     </h1>
 
-    <div class="gap-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="gap-3 grid grid-cols-2 lg:grid-cols-3">
       <article
         v-for="item in results"
         :key="item.playerId"
-        class="border-default bg-elevated p-4 border rounded-xl flex flex-col gap-3"
+        class="border-default bg-elevated rounded-card shadow-card gap-2 p-3 border relative flex flex-col items-center text-center sm:p-4"
       >
-        <div>
-          <p class="text-muted text-sm">
-            {{ item.playerName }}
-          </p>
-          <p class="text-3xl tracking-wide font-bold mt-1">
-            {{ item.hero.name }}
-          </p>
-          <div class="mt-2 flex flex-wrap gap-1">
-            <UBadge
-              v-for="lane in item.hero.lanes"
-              :key="lane"
-              color="primary"
-              variant="subtle"
-              size="sm"
-            >
-              {{ lane }}
-            </UBadge>
-          </div>
+        <span class="via-gold-500/70 absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent to-transparent" aria-hidden="true" />
+        <HeroAvatar :name="item.hero.name" :official-id="item.hero.officialId" />
+        <p class="text-muted w-full truncate text-xs">
+          {{ item.playerName }}
+        </p>
+        <!-- 字号跟着卡片宽度走：移动端两列时卡片约 165px，用 xl 才不会挤爆长名 -->
+        <p class="w-full text-xl font-bold tracking-tight leading-tight break-words sm:text-3xl">
+          {{ item.hero.name }}
+        </p>
+        <div class="flex flex-wrap justify-center gap-1">
+          <UBadge
+            v-for="lane in item.hero.lanes"
+            :key="lane"
+            color="primary"
+            variant="subtle"
+            size="md"
+          >
+            {{ lane }}
+          </UBadge>
         </div>
         <UButton
           icon="i-lucide-refresh-cw"
           color="neutral"
           variant="soft"
           size="md"
-          class="self-start"
+          class="mt-auto h-11 w-full justify-center"
           :disabled="!canRedrawOne"
           :aria-label="`重抽 ${item.playerName} 的英雄`"
           @click="redrawOne(item.playerId)"
@@ -230,7 +241,7 @@ async function redrawAll() {
           color="neutral"
           variant="outline"
           size="lg"
-          class="flex-1"
+          class="h-12 flex-1 justify-center"
           @click="backToEdit"
         >
           返回修改名单
@@ -238,7 +249,7 @@ async function redrawAll() {
         <UButton
           icon="i-lucide-refresh-cw"
           size="lg"
-          class="flex-1"
+          class="h-12 flex-1 justify-center"
           :disabled="!canDraw"
           @click="redrawAll"
         >

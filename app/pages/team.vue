@@ -76,13 +76,13 @@ function backToEdit() {
       <article
         v-for="(team, index) in rollTeams"
         :key="index"
-        class="border-default bg-elevated p-4 border rounded-xl"
+        class="border-default bg-elevated rounded-card p-4 border"
       >
         <h2 class="text-lg font-semibold">
           队伍 {{ index === 0 ? 'A' : 'B' }}
         </h2>
         <ol class="mt-2 space-y-1">
-          <li v-for="(name, i) in team" :key="i" class="text-xl font-medium opacity-50">
+          <li v-for="(name, i) in team" :key="i" class="text-gold-700 dark:text-gold-300 text-xl font-medium animate-pulse">
             {{ name }}
           </li>
         </ol>
@@ -96,28 +96,28 @@ function backToEdit() {
     </h1>
 
     <div class="space-y-3">
-      <div class="flex items-center justify-between gap-3">
-        <h2 class="text-muted text-sm font-medium">
-          每队人数
-        </h2>
+      <div class="flex items-center justify-between">
+        <SectionTitle title="每队人数" />
+        <!-- increment/decrement 传对象会展开到内部按钮上，用来把步进按钮撑到 44px 触屏目标 -->
         <UInputNumber
           v-model="perTeam"
-          :min="1"
-          :max="5"
-          size="lg"
+          :min="PER_TEAM_MIN"
+          :max="PER_TEAM_MAX"
+          size="xl"
+          :increment="{ class: 'size-11 justify-center' }"
+          :decrement="{ class: 'size-11 justify-center' }"
+          class="h-11 max-w-1/2"
           aria-label="每队人数"
         />
+        <span class="text-dimmed text-xs">
+          共 {{ capacity }} 个槽位
+        </span>
       </div>
-      <p class="text-dimmed text-xs">
-        共 {{ capacity }} 个槽位
-      </p>
     </div>
 
     <div class="space-y-3">
       <div class="flex items-center justify-between">
-        <h2 class="text-muted text-sm font-medium">
-          玩家名单
-        </h2>
+        <SectionTitle title="玩家名单" />
         <span class="text-dimmed text-xs">{{ playersStore.players.length }}/{{ PLAYER_COUNT_MAX }} 人</span>
       </div>
       <PlayerListEditor />
@@ -147,21 +147,25 @@ function backToEdit() {
       <article
         v-for="(team, index) in teams"
         :key="index"
-        class="border-default bg-elevated p-4 border rounded-xl"
+        class="border-default bg-elevated rounded-card shadow-card p-4 border relative overflow-hidden"
       >
+        <span class="via-gold-500/70 absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent to-transparent" aria-hidden="true" />
         <div class="flex items-baseline justify-between">
           <h2 class="text-lg font-semibold">
             队伍 {{ index === 0 ? 'A' : 'B' }}
           </h2>
           <span class="text-dimmed text-xs">{{ team.length }} 人</span>
         </div>
-        <ol class="mt-2 space-y-1">
+        <ol class="mt-3 space-y-2">
           <li
-            v-for="member in team"
+            v-for="(member, i) in team"
             :key="member.id"
-            class="text-xl font-medium"
+            class="flex items-center gap-3"
           >
-            {{ member.name }}
+            <span class="bg-gold-500/15 text-gold-700 dark:text-gold-300 flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
+              {{ i + 1 }}
+            </span>
+            <span class="text-lg font-medium truncate">{{ member.name }}</span>
           </li>
         </ol>
       </article>
@@ -177,7 +181,7 @@ function backToEdit() {
           color="neutral"
           variant="outline"
           size="lg"
-          class="flex-1"
+          class="h-12 flex-1 justify-center"
           @click="backToEdit"
         >
           返回修改名单
@@ -185,7 +189,7 @@ function backToEdit() {
         <UButton
           icon="i-lucide-refresh-cw"
           size="lg"
-          class="flex-1"
+          class="h-12 flex-1 justify-center"
           @click="startSplit"
         >
           重新分组
