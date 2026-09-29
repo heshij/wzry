@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DrawRecord } from '~/utils/history'
+import { findHeroByName } from '~/constants/heroes'
 import { useHistoryStore } from '~/stores/history'
 
 const historyStore = useHistoryStore()
@@ -37,7 +38,7 @@ function confirmClear() {
 
 <template>
   <div class="space-y-4">
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between gap-3">
       <h1 class="text-xl font-semibold">
         历史记录
       </h1>
@@ -46,6 +47,7 @@ function confirmClear() {
         icon="i-lucide-trash-2"
         color="error"
         variant="ghost"
+        class="h-11"
         @click="clearModalOpen = true"
       >
         清空
@@ -59,45 +61,52 @@ function confirmClear() {
     <article
       v-for="record in historyStore.records"
       :key="record.id"
-      class="border-default bg-elevated p-4 border rounded-xl"
+      class="border-default bg-elevated rounded-card shadow-card p-4 border"
     >
       <button
         type="button"
-        class="flex gap-3 w-full text-left items-center"
+        class="flex min-h-11 w-full items-center gap-3 text-left"
         :aria-expanded="expandedIds.includes(record.id)"
         @click="toggle(record.id)"
       >
-        <UIcon
-          :name="record.type === 'hero' ? 'i-lucide-sparkles' : 'i-lucide-users'"
-          class="text-primary shrink-0 size-5"
-        />
-        <span class="flex-1 min-w-0">
-          <span class="font-medium block">{{ summaryOf(record) }}</span>
-          <span class="text-dimmed text-xs block">{{ formatTime(record.createdAt) }}</span>
+        <span
+          class="rounded-control flex size-10 shrink-0 items-center justify-center"
+          :class="record.type === 'hero' ? 'bg-gold-500/15 text-gold-700 dark:text-gold-300' : 'bg-primary/10 text-primary'"
+        >
+          <UIcon
+            :name="record.type === 'hero' ? 'i-lucide-sparkles' : 'i-lucide-users'"
+            class="size-5"
+          />
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block font-medium">{{ summaryOf(record) }}</span>
+          <span class="text-dimmed block text-xs">{{ formatTime(record.createdAt) }}</span>
         </span>
         <UIcon
           :name="expandedIds.includes(record.id) ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-          class="text-dimmed shrink-0 size-5"
+          class="text-dimmed size-5 shrink-0"
         />
       </button>
 
-      <div v-if="expandedIds.includes(record.id)" class="border-default mt-3 pt-3 border-t space-y-1">
+      <div v-if="expandedIds.includes(record.id)" class="bg-default rounded-control mt-3 space-y-2 p-3">
         <template v-if="record.type === 'hero'">
           <div
             v-for="(entry, index) in record.entries"
             :key="`${record.id}-${index}`"
-            class="flex items-baseline gap-3 text-sm"
+            class="flex items-center gap-3"
           >
-            <span class="text-muted flex-1 truncate">{{ entry.playerName }}</span>
-            <span class="shrink-0 font-medium">
-              {{ entry.heroName }}
-              <span class="text-dimmed text-xs ml-1">{{ entry.lanes.join('/') }}</span>
+            <HeroAvatar :name="entry.heroName" :official-id="findHeroByName(entry.heroName)?.officialId" size="sm" />
+            <span class="text-muted min-w-0 flex-1 truncate text-sm">{{ entry.playerName }}</span>
+            <span class="shrink-0 text-right">
+              <span class="block text-sm font-medium">{{ entry.heroName }}</span>
+              <span class="text-dimmed block text-xs">{{ entry.lanes.join('/') }}</span>
             </span>
           </div>
         </template>
         <template v-else>
           <div v-for="(team, index) in record.teams" :key="`${record.id}-team-${index}`" class="text-sm">
-            <span class="text-muted">队伍 {{ index === 0 ? 'A' : 'B' }}：</span>{{ team.join('、') }}
+            <span class="text-gold-700 dark:text-gold-300 font-medium">队伍 {{ index === 0 ? 'A' : 'B' }}：</span>
+            <span class="text-muted">{{ team.join('、') }}</span>
           </div>
         </template>
       </div>
@@ -108,11 +117,11 @@ function confirmClear() {
         <p>确定清空全部 {{ historyStore.records.length }} 条记录吗？清空后无法恢复。</p>
       </template>
       <template #footer>
-        <div class="flex justify-end gap-2 w-full">
-          <UButton color="neutral" variant="ghost" @click="clearModalOpen = false">
+        <div class="flex w-full justify-end gap-2">
+          <UButton color="neutral" variant="ghost" class="h-11" @click="clearModalOpen = false">
             取消
           </UButton>
-          <UButton color="error" @click="confirmClear">
+          <UButton color="error" class="h-11" @click="confirmClear">
             清空
           </UButton>
         </div>

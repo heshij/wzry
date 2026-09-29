@@ -2,18 +2,87 @@
 @import '@nuxt/ui';
 
 /*
- * 品牌主题与可读性调整。这些规则不放进 @layer，以便覆盖 Nuxt UI 在 @layer theme 里的同名变量。
- * 1) 浅色模式下 --ui-primary 默认取 500 号色，白字实心按钮对比度只有约 2:1；浅色下改用 700 号色
- *    （白字 ≈ 6.8:1，定位徽标文字同样达标）。深色模式保持默认的亮色配深字，不要覆盖。
- * 2) 弱化文字（时间戳、人数计数等）默认过淡，浅色与深色下都不足 4.5:1，整体提一档。
+ * v0.2 设计 token，全站唯一真源，方案说明见 .scratch/wzry-draw/design-v0.2.md
+ * 颜色分工：navy = 表面与文字层级，gold = 品牌强调（只用于图标徽章/头像环/强调线/高光），
+ * blue = 可交互（按钮/链接/焦点，对比度已达标）。三者不互相兼职。
+ */
+@theme {
+  --color-navy-50: #f2f6fd;
+  --color-navy-100: #e2eaf8;
+  --color-navy-200: #c4d3ee;
+  --color-navy-300: #9cb2dd;
+  --color-navy-400: #6b86bd;
+  --color-navy-500: #47619b;
+  --color-navy-600: #33497b;
+  --color-navy-700: #24365c;
+  --color-navy-800: #16233f;
+  --color-navy-900: #0b1220;
+  --color-navy-950: #070c16;
+
+  --color-gold-100: #fdf0cc;
+  --color-gold-300: #f2cc6b;
+  --color-gold-400: #e3b545;
+  --color-gold-500: #d4a017;
+  --color-gold-700: #8a660f;
+
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+
+  --shadow-card: 0 1px 2px rgb(11 18 32 / 0.06), 0 6px 16px -8px rgb(11 18 32 / 0.18);
+  --shadow-raised: 0 -1px 2px rgb(11 18 32 / 0.06), 0 -8px 24px -12px rgb(11 18 32 / 0.24);
+}
+
+/*
+ * Nuxt UI token 覆盖。这些规则不放进 @layer，以便压过 Nuxt UI 在 @layer theme 里的同名变量。
+ * 1) 浅色模式 --ui-primary 默认取 500 号色，白字实心按钮对比度只有约 2:1；浅色改用 700 号色
+ *    （白字 ≈ 6.8:1，定位徽标文字同样达标）。深色模式保持默认亮色配深字，不要覆盖。
+ * 2) 弱化文字默认过淡：浅色下沉到带蓝调的卡面上只有约 4.4:1，深色也不足 4.5:1，两档各提一档。
+ *    浅色下 muted 取 700、dimmed 取 600，靠字号而非颜色区分层级。
+ * 3) 浅色**不要**覆盖 --ui-bg 去铺带色底：Modal 的内容底是 bg-default、遮罩是 bg-elevated/75，
+ *    一旦 elevated 比 bg 亮，弹层就会比自己的遮罩还暗（层级反转）。这里只把 elevated 铺成 navy-50，
+ *    页面仍是白底，卡片/悬停带一层极浅的品牌蓝。
  */
 :root:not(.dark) {
   --ui-primary: var(--ui-color-primary-700);
-  --ui-text-muted: var(--ui-color-neutral-600);
-  --ui-text-dimmed: var(--ui-color-neutral-500);
+  --ui-text-muted: var(--ui-color-neutral-700);
+  --ui-text-dimmed: var(--ui-color-neutral-600);
+  --ui-bg-elevated: var(--color-navy-50);
+  --ui-bg-muted: var(--color-navy-100);
+  --ui-border: var(--color-navy-200);
+  --ui-border-muted: var(--color-navy-200);
 }
 
 .dark {
+  /* 400 号色作正文/徽标文字时在深色卡面上只有 3.85:1，提到 300 号色（实测 ≈5.4:1）；
+     实心按钮是深字配亮底，主色变亮只会让对比更高 */
+  --ui-primary: var(--ui-color-primary-300);
   --ui-text-muted: var(--ui-color-neutral-300);
   --ui-text-dimmed: var(--ui-color-neutral-400);
+  --ui-bg: var(--color-navy-800);
+  --ui-bg-muted: var(--color-navy-700);
+  --ui-bg-elevated: var(--color-navy-700);
+  --ui-bg-accented: var(--color-navy-600);
+  --ui-border: var(--color-navy-600);
+  --ui-border-muted: var(--color-navy-600);
+  --ui-border-accented: var(--color-navy-500);
+}
+
+/*
+ * Nuxt UI 会把 --ui-radius 放大成整条圆角刻度（md = ×1.5、lg = ×2、xl = ×3）。
+ * 取 0.5rem 正好让控件圆角 = --radius-control(12px)、弹层 = --radius-card(16px)；
+ * 再大就会把 16px 的复选框（rounded-sm）压成圆形，所以不要调大。
+ */
+:root {
+  --ui-radius: 0.5rem;
+}
+
+/* 揭晓动画对动效敏感用户降级为直接出结果 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

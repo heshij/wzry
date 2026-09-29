@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { zh_cn } from '@nuxt/ui/locale'
 import { appName } from '~/constants'
 
 const color = useColorMode()
@@ -8,13 +9,14 @@ useHead({
   htmlAttrs: { lang: 'zh-CN' },
   meta: [{
     name: 'theme-color',
-    content: () => (color.value === 'dark' ? '#0b1220' : '#ffffff'),
+    // 跟随实际页面底色（浅色白 / 深色 navy-800），manifest 的 theme_color 另用品牌 navy-900
+    content: () => (color.value === 'dark' ? '#16233f' : '#ffffff'),
   }],
 })
 </script>
 
 <template>
-  <UApp>
+  <UApp :locale="zh_cn">
     <VitePwaManifest />
     <NuxtLayout>
       <NuxtPage />

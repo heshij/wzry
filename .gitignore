@@ -7,4 +7,6 @@ dist
 .env
 .idea/
 public/assets/fonts
+# 官方英雄形象，由 pnpm heroes 拉取，版权归腾讯所有，仅本地/个人使用，不入库
+public/heroes/
 .scratch/tmp

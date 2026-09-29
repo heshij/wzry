@@ -30,7 +30,7 @@ function focusNext(index: number) {
     <div
       v-for="(player, index) in playersStore.players"
       :key="player.id"
-      class="flex gap-2 items-center"
+      class="flex items-center gap-2"
     >
       <UInput
         :id="`player-name-${index}`"
@@ -38,7 +38,7 @@ function focusNext(index: number) {
         :placeholder="`玩家${index + 1}`"
         :aria-label="`玩家${index + 1}昵称`"
         size="lg"
-        class="flex-1"
+        class="h-11 flex-1"
         autocomplete="off"
         enterkeyhint="next"
         @keydown.enter="focusNext(index)"
@@ -49,6 +49,7 @@ function focusNext(index: number) {
         color="neutral"
         variant="ghost"
         size="lg"
+        class="size-11 justify-center"
         :disabled="!canRemove"
         :aria-label="`删除玩家${index + 1}`"
         @click="playersStore.remove(player.id)"
@@ -61,6 +62,7 @@ function focusNext(index: number) {
       variant="outline"
       size="lg"
       block
+      class="h-11"
       :disabled="!canAdd"
       @click="playersStore.add()"
     >

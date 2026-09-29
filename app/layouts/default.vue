@@ -7,9 +7,9 @@ const isHome = computed(() => route.path === '/')
 </script>
 
 <template>
-  <div class="bg-default text-default flex flex-col min-h-dvh">
-    <header class="border-default bg-default/85 border-b top-0 sticky z-20 backdrop-blur">
-      <div class="mx-auto px-2 flex gap-1 h-14 max-w-3xl w-full items-center">
+  <div class="bg-default text-default flex min-h-dvh flex-col">
+    <header class="border-default bg-default/85 sticky top-0 z-20 border-b backdrop-blur">
+      <div class="mx-auto flex h-14 w-full max-w-3xl items-center gap-1 px-2">
         <UButton
           v-if="!isHome"
           to="/"
@@ -17,17 +17,19 @@ const isHome = computed(() => route.path === '/')
           aria-label="返回首页"
           color="neutral"
           variant="ghost"
-        />
-        <NuxtLink to="/" class="font-semibold truncate">
-          {{ appName }}
+        >
+          返回
+        </UButton>
+        <NuxtLink v-else to="/" class="flex min-w-0 items-center gap-2 px-2">
+          <span class="truncate font-semibold">{{ appName }}</span>
         </NuxtLink>
         <div class="ml-auto">
-          <DarkToggle />
+          <UColorModeButton size="lg" class="size-11 justify-center" />
         </div>
       </div>
     </header>
 
-    <main class="mx-auto px-4 pb-28 pt-4 flex-1 max-w-3xl w-full">
+    <main class="mx-auto w-full max-w-3xl flex-1 px-4 pt-4 pb-28">
       <slot />
     </main>
   </div>

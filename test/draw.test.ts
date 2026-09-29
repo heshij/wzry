@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { heroes } from '~/constants/heroes'
+import { findHeroByName, heroes } from '~/constants/heroes'
 import { drawHeroes, shuffle } from '~/utils/draw'
 import { poolOf, seeded } from './helpers'
 
@@ -14,6 +14,20 @@ describe('英雄数据', () => {
     for (const hero of heroes) {
       expect(hero.lanes.length).toBeGreaterThan(0)
     }
+  })
+
+  it('官方数字 id 唯一且为有效正整数', () => {
+    expect(new Set(heroes.map(hero => hero.officialId)).size).toBe(heroes.length)
+    for (const hero of heroes) {
+      expect(Number.isInteger(hero.officialId)).toBe(true)
+      expect(hero.officialId).toBeGreaterThan(0)
+    }
+  })
+
+  it('可按名称反查英雄，且名称唯一保证反查结果正确', () => {
+    for (const hero of heroes)
+      expect(findHeroByName(hero.name)?.officialId).toBe(hero.officialId)
+    expect(findHeroByName('不存在的英雄')).toBeUndefined()
   })
 })
 
