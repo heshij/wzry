@@ -1,82 +1,76 @@
-<p align="center">
-<img src="https://user-images.githubusercontent.com/11247099/140462375-7b7ac4db-35b7-453c-8a05-13d8d20282c4.png" alt="Vitesse" width="600"/>
-</p>
+# 王者抽签
 
-<h2 align="center">
-<a href="https://github.com/antfu/vitesse">Vitesse</a> for Nuxt 4
-</h2><br>
+开黑前快速决定本局玩什么英雄、谁跟谁一队。
 
-<p align="center">
-<br>
-<a href="https://vitesse-nuxt3.netlify.app/">🖥 Online Preview</a>
-<br><br>
-<a href="https://stackblitz.com/github/antfu/vitesse-nuxt"><img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
-</p>
+一个纯本地的单机网页应用：不用登录、没有后端，数据只存在你自己的浏览器里。移动端优先设计，可安装到手机桌面（PWA），装过之后离线也能用。
 
-## Features
+## 功能
 
-- 💚 [Nuxt 4](https://nuxt.com/) - SSR, ESR, File-based routing, components auto importing, modules, etc.
+**抽英雄**：为名单里的每位玩家随机抽一个互不重复的英雄，结果以大字号卡片展示，并附定位标签（对抗路 / 打野 / 中路 / 发育路 / 游走）。
 
-- 📑 [Nuxt UI](https://github.com/nuxt/ui) - UI components for Nuxt 4
+- 可以只重抽某一位玩家，其他人结果不变，新英雄也不会与本局其他英雄重复
+- 不满意可以一键「全部重抽」
+- 抽签时有短暂的滚动揭晓动画
 
-- ⚡️ Vite - Instant HMR.
+**抽队友**：把名单随机均分成两队，每队人数可调（1~5，默认 5v5）。名单人数与容量不符时按实际人数均分，人数为奇数时随机一队多 1 人并给出提示。
 
-- 🎨 [UnoCSS](https://github.com/unocss/unocss) - The instant on-demand atomic CSS engine.
+**英雄池**：内置当前版本 133 位全英雄。可以自建英雄池，只抽自己会玩的那些英雄；抽签前随时切换，选择会被记住。
 
-- 😃 Use icons from any icon sets in Pure CSS, powered by [UnoCSS](https://github.com/unocss/unocss).
+**历史记录**：抽英雄、抽队友的结果自动留档，按时间倒序展示，可展开详情，也可一键清空。最多保留最近 100 条。
 
-- 🔥 The `<script setup>` syntax.
+玩家名单同样会自动保存，下次开黑不用重新输入。支持深色模式。
 
-- 🍍 [State Management via Pinia](https://github.com/vuejs/pinia), see [./app/composables/user.ts](./app/composables/user.ts).
+## 技术栈
 
-- 📑 [Layout system](./app/layouts).
+Nuxt 4（`ssr: false` 纯 SPA）+ Nuxt UI 4 + UnoCSS + Pinia + VueUse + Vite PWA，TypeScript，Vitest。
 
-- 📥 APIs auto importing - for Composition API, VueUse and custom composables.
-
-- 🏎 Zero-config cloud functions and deploy.
-
-- 🦾 TypeScript, of course.
-
-- 📲 [PWA](https://github.com/vite-pwa/nuxt) with offline support and auto-update behavior.
-
-## Plugins
-
-### Nuxt Modules
-
-- [VueUse](https://github.com/vueuse/vueuse) - collection of useful composition APIs.
-- [ColorMode](https://github.com/nuxt-modules/color-mode) - dark and Light mode with auto detection made easy with Nuxt.
-- [UnoCSS](https://github.com/unocss/unocss) - the instant on-demand atomic CSS engine.
-- [Pinia](https://github.com/vuejs/pinia) - intuitive, type safe, light and flexible Store for Vue.
-- [VitePWA](https://github.com/vite-pwa/nuxt) - zero-config PWA Plugin for Nuxt 4.
-- [DevTools](https://github.com/nuxt/devtools) - unleash Nuxt Developer Experience.
-
-## IDE
-
-We recommend using [VS Code](https://code.visualstudio.com/) with [Volar](https://github.com/johnsoncodehk/volar) to get the best experience (You might want to disable [Vetur](https://vuejs.github.io/vetur/) if you have it).
-
-## Variations
-
-- [vitesse](https://github.com/antfu/vitesse) - Opinionated Vite Starter Template
-- [vitesse-lite](https://github.com/antfu/vitesse-lite) - Lightweight version of Vitesse
-- [vitesse-nuxt-bridge](https://github.com/antfu/vitesse-nuxt-bridge) - Vitesse for Nuxt 2 with Bridge
-- [vitesse-webext](https://github.com/antfu/vitesse-webext) - WebExtension Vite starter template
-
-## Try it now!
-
-### Online
-
-<a href="https://stackblitz.com/github/antfu/vitesse-nuxt"><img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt=""></a>
-
-### GitHub Template
-
-[Create a repo from this template on GitHub](https://github.com/antfu/vitesse-nuxt/generate).
-
-### Clone to local
-
-If you prefer to do it manually with the cleaner git history
+## 快速开始
 
 ```bash
-npx degit antfu/vitesse-nuxt my-nuxt-app
-cd my-nuxt-app
-pnpm i # If you don't have pnpm installed, run: npm install -g pnpm
+pnpm install
+pnpm dev
 ```
+
+打开 http://localhost:3002 即可。想连 PWA（service worker）一起调试就用 `pnpm dev:pwa`。
+
+## 常用命令
+
+```bash
+pnpm dev             # 开发服，http://localhost:3002
+pnpm dev:pwa         # 开发服并启用 service worker
+pnpm lint            # ESLint 检查
+pnpm typecheck       # 类型检查（会重写 .nuxt，勿与 dev server 同时跑）
+pnpm test            # Vitest 单元测试
+pnpm build           # 生产构建，产物在 .output
+pnpm start           # 启动生产构建（node .output/server/index.mjs）
+pnpm generate        # 生成纯静态产物，输出 .output/public
+pnpm icons           # 改动 public/icon.svg 后重新生成图标
+```
+
+## 项目结构
+
+```
+app/
+  pages/        路由：首页 / 抽英雄 / 抽队友 / 英雄池 / 历史
+  stores/       Pinia store：玩家名单、英雄池、历史记录
+  utils/        纯函数业务逻辑：抽签、分队、名单、池解析、历史
+  constants/    内置英雄数据（133 位）
+  components/   共用组件：底部操作栏、名单编辑器
+  composables/  揭晓动画
+test/           Vitest 单元测试
+```
+
+## 数据与隐私
+
+玩家名单、英雄池、历史记录全部保存在浏览器 localStorage（key 前缀 `wzry:`），不发送到任何服务器，也没有账号体系。清除浏览器数据或换设备后，记录不会跟着走。
+
+## 部署
+
+两种方式任选：
+
+- 静态托管：`pnpm generate` 后把 `.output/public` 发布到任意静态服务器
+- 容器：仓库自带 Dockerfile，构建后运行 `node .output/server/index.mjs`（监听 3000 端口）
+
+## 开发说明
+
+编码规范、架构约定、开发与验收流程、踩坑记录都写在 [CLAUDE.md](./CLAUDE.md)。产品需求与实现 ticket 在 `.scratch/wzry-draw/`。
